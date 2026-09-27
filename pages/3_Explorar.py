@@ -18,7 +18,9 @@ with st.form("meu_form"):
     time_favorito = st.selectbox("Time favorito", ["Nenhum", "Palmeiras", "Flamengo", "Corinthians", "Outro"])
     quantos = st.number_input("Quantos jogos por semana voce assiste?", min_value=0, max_value=20, value=2)
     data = st.date_input("Data de hoje")
+    hora = st.time_input("Horario que voce costuma ver jogo")
     cor = st.color_picker("Escolha uma cor", "#1f77b4")
+    comentario = st.text_area("Deixa um comentario sobre o dashboard")
     prefere = st.radio("Voce prefere ver o que?", ["Passes", "Chutes"], horizontal=True)
     marcar = st.checkbox("Quero receber novidades")
     enviou = st.form_submit_button("Enviar")
@@ -31,21 +33,23 @@ if enviou:
         "time": time_favorito,
         "jogos_por_semana": quantos,
         "data": str(data),
+        "hora": str(hora),
         "cor": cor,
+        "comentario": comentario,
         "prefere": prefere,
         "novidades": marcar,
     })
 
-# upload de arquivo. a rubrica pede um servico de upload, entao aceito CSV e JSON
+# upload de arquivo. aceito CSV e JSON pra dados e imagem pra quem quiser subir uma foto
 st.header("Upload de arquivo")
-arquivo = st.file_uploader("Suba um CSV ou JSON pra dar uma olhada", type=["csv", "json"])
+arquivo = st.file_uploader("Suba um CSV, JSON ou imagem", type=["csv", "json", "png", "jpg"])
 if arquivo is not None:
-    if arquivo.name.endswith(".csv"):
-        df = pd.read_csv(arquivo)
+    if arquivo.name.endswith((".png", ".jpg")):
+        st.image(arquivo, caption=arquivo.name, width=400)
     else:
-        df = pd.read_json(arquivo)
-    st.write("Primeiras linhas do arquivo:")
-    st.dataframe(df.head(), use_container_width=True)
+        df = pd.read_csv(arquivo) if arquivo.name.endswith(".csv") else pd.read_json(arquivo)
+        st.write("Primeiras linhas do arquivo:")
+        st.dataframe(df.head())
 
 # mapa com pydeck. como os eventos nao tem lat/long, usei as cidades-sede de uns
 # estadios famosos so pra mostrar a visualizacao espacial funcionando.

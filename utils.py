@@ -42,3 +42,22 @@ def estatisticas_partida(eventos):
         "chutes": len(chutes),
         "gols": len(gols),
     }
+
+
+def resumo_jogadores(eventos):
+    # uma linha por jogador com passes, chutes e gols, pra comparar os jogadores
+    df = eventos.dropna(subset=["player"])
+    resumo = df.groupby(["player", "team"]).agg(
+        passes=("type", lambda t: (t == "Pass").sum()),
+        chutes=("type", lambda t: (t == "Shot").sum()),
+    ).reset_index()
+    gols = df[df["shot_outcome"] == "Goal"].groupby("player").size()
+    resumo["gols"] = resumo["player"].map(gols).fillna(0).astype(int)
+    return resumo
+
+
+def passes_acumulados(eventos):
+    # passes somados minuto a minuto de cada time, pra ver a evolucao no jogo
+    passes = eventos[eventos["type"] == "Pass"]
+    tabela = passes.groupby(["minute", "team"]).size().unstack(fill_value=0)
+    return tabela.cumsum()

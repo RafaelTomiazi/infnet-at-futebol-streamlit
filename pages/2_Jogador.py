@@ -1,31 +1,29 @@
 # pagina que olha um jogador especifico dentro da partida escolhida.
-import matplotlib.pyplot as plt
-import seaborn as sns
 import streamlit as st
-from mplsoccer import Pitch
 
+import graficos
 import utils
 
 st.set_page_config(page_title="Jogador", page_icon="⚽", layout="wide")
 st.title("⚽ Analise por jogador")
 
-# essa pagina depende da partida escolhida la na aba Partida
+# essa pagina depende da partida escolhida la na pagina Partida
 if "match_id" not in st.session_state:
     st.warning("Escolha uma partida primeiro na pagina 'Partida'.")
     st.stop()
 
-match_id = st.session_state["match_id"]
 st.caption(f"Partida: {st.session_state.get('confronto', '')}")
 
 with st.spinner("Carregando eventos..."):
-    eventos = utils.separar_xy(utils.carregar_eventos(match_id))
+    eventos = utils.separar_xy(utils.carregar_eventos(st.session_state["match_id"]))
 
 jogadores = sorted(eventos["player"].dropna().unique().tolist())
-jogador = st.sidebar.selectbox("Jogador", jogadores)
+salvo = st.session_state.get("jogador")
+jogador = st.sidebar.selectbox("Jogador", jogadores,
+                               index=jogadores.index(salvo) if salvo in jogadores else 0)
+st.session_state["jogador"] = jogador
 
 do_jogador = eventos[eventos["player"] == jogador]
-
-# numeros do jogador
 passes = do_jogador[do_jogador["type"] == "Pass"]
 passes_certos = passes[passes["pass_outcome"].isna()]
 chutes = do_jogador[do_jogador["type"] == "Shot"]
@@ -33,40 +31,38 @@ gols = chutes[chutes["shot_outcome"] == "Goal"]
 aproveitamento = (len(passes_certos) / len(passes) * 100) if len(passes) > 0 else 0
 
 c1, c2, c3 = st.columns(3)
-c1.metric("Passes certos", len(passes_certos), delta=f"de {len(passes)}")
-c2.metric("Aproveitamento de passe", f"{aproveitamento:.0f}%")
-c3.metric("Gols", len(gols))
+c1.metric("Passes certos", len(passes_certos), delta=f"de {len(passes)}", border=True)
+c2.metric("Aproveitamento de passe", f"{aproveitamento:.0f}%", border=True)
+c3.metric("Gols", len(gols), border=True)
 
-st.subheader(f"Passes de {jogador}")
-# reaproveito o mesmo estilo de mapa da outra pagina, so que so pros passes desse jogador
-campo = Pitch(pitch_type="statsbomb", line_color="black")
-fig, ax = campo.draw(figsize=(7, 4.5))
-for _, p in passes.iterrows():
-    if isinstance(p["location"], list) and isinstance(p["pass_end_location"], list):
-        cor = "red" if isinstance(p["pass_outcome"], str) else "blue"
-        campo.arrows(p["location"][0], p["location"][1],
-                     p["pass_end_location"][0], p["pass_end_location"][1],
-                     ax=ax, color=cor, width=1, headwidth=4, alpha=0.6)
-st.pyplot(fig)
+col_a, col_b = st.columns(2)
+with col_a:
+    st.subheader("Passes")
+    st.pyplot(graficos.mapa_passes(passes, figsize=(7, 4.5)))
+    st.caption("Azul = passe certo, vermelho = passe errado.")
+with col_b:
+    st.subheader("Onde ele atuou no campo")
+    com_posicao = do_jogador.dropna(subset=["x", "y"])
+    if len(com_posicao) > 2:
+        st.pyplot(graficos.mapa_calor(com_posicao))
+        st.caption("Numero de acoes em cada parte do campo (ataque pra direita).")
+    else:
+        st.info("Poucas acoes desse jogador pra desenhar o mapa de calor.")
 
-# um grafico do seaborn pra ver onde no campo esse jogador mais tocou na bola
-st.subheader("Onde ele atuou no campo")
-com_posicao = do_jogador.dropna(subset=["x", "y"])
-if len(com_posicao) > 2:
-    fig2, ax2 = plt.subplots(figsize=(7, 4.5))
-    sns.kdeplot(data=com_posicao, x="x", y="y", fill=True, cmap="Reds", ax=ax2)
-    ax2.set_xlim(0, 120)
-    ax2.set_ylim(0, 80)
-    ax2.set_xlabel("campo (ataque para a direita)")
-    st.pyplot(fig2)
-else:
-    st.info("Poucas acoes desse jogador pra desenhar o mapa de calor.")
-
-# download so das acoes do jogador
 colunas = [c for c in ["minute", "type", "team", "player", "x", "y"] if c in do_jogador.columns]
-st.download_button(
-    "Baixar acoes do jogador em CSV",
-    do_jogador[colunas].to_csv(index=False).encode("utf-8"),
-    "acoes_jogador.csv",
-    "text/csv",
-)
+st.download_button("Baixar acoes do jogador em CSV",
+                   do_jogador[colunas].to_csv(index=False).encode("utf-8"),
+                   "acoes_jogador.csv", "text/csv")
+
+st.header("Comparar dois jogadores")
+with st.form("comparar"):
+    a = st.selectbox("Jogador 1", jogadores, index=jogadores.index(jogador))
+    b = st.selectbox("Jogador 2", jogadores, index=1 if len(jogadores) > 1 else 0)
+    comparar = st.form_submit_button("Comparar")
+
+if comparar:
+    resumo = utils.resumo_jogadores(eventos)
+    comparacao = resumo[resumo["player"].isin([a, b])].set_index("player")
+    # comando magic: so deixar a variavel sozinha na linha que o streamlit mostra
+    comparacao
+    st.bar_chart(comparacao[["passes", "chutes", "gols"]].T)
