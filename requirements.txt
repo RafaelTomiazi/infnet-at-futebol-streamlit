@@ -1,0 +1,9 @@
+streamlit
+statsbombpy
+mplsoccer
+pandas
+matplotlib
+seaborn
+plotly
+altair
+pydeck
