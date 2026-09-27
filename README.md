@@ -26,7 +26,7 @@ streamlit run app.py
 ```
 
 Se der `No module named 'mplsoccer'` e porque o streamlit rodou fora do venv. Da pra rodar direto com
-`.env\Scripts\python.exe -m streamlit run app.py`
+`.\venv\Scripts\python.exe -m streamlit run app.py`
 
 Os dados vem da internet pela StatsBombPy, entao precisa estar conectado. O primeiro
 carregamento demora um pouco porque baixa os eventos; depois o cache deixa rapido.
