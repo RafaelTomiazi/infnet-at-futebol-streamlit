@@ -11,7 +11,10 @@ chute com o mplsoccer.
 - **app.py** - pagina inicial, com a explicacao do projeto e do Streamlit
 - **pages/1_Partida.py** - estatisticas, mapa de passes e de chutes, graficos e dados da partida
 - **pages/2_Jogador.py** - analise de um jogador (passes, aproveitamento, mapa de calor)
-- **pages/3_Explorar.py** - formulario, upload de arquivo e mapa com PyDeck
+- **pages/3_Explorar.py** - formulario, upload de arquivo e mapa com PyDeck e Folium
+- **utils.py** - funcoes que carregam os dados (com cache)
+- **graficos.py** - funcoes que montam os graficos
+- **hello.py** - primeiro teste do ambiente
 
 ## Como rodar
 
@@ -21,6 +24,9 @@ venv\Scripts\activate
 pip install -r requirements.txt
 streamlit run app.py
 ```
+
+Se der `No module named 'mplsoccer'` e porque o streamlit rodou fora do venv. Da pra rodar direto com
+`.env\Scripts\python.exe -m streamlit run app.py`
 
 Os dados vem da internet pela StatsBombPy, entao precisa estar conectado. O primeiro
 carregamento demora um pouco porque baixa os eventos; depois o cache deixa rapido.
