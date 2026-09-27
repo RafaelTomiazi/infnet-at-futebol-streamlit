@@ -75,7 +75,8 @@ st.pydeck_chart(pdk.Deck(
 st.header("Mesmo mapa com Folium")
 mapa = folium.Map(location=[30, 0], zoom_start=2)
 for _, e in estadios.iterrows():
-    folium.Marker([e["lat"], e["lon"]], popup=e["estadio"]).add_to(mapa)
+    folium.CircleMarker([e["lat"], e["lon"]], radius=8, color="red", fill=True,
+                        popup=e["estadio"]).add_to(mapa)
 st_folium(mapa, height=400, use_container_width=True)
 
 st.balloons()
