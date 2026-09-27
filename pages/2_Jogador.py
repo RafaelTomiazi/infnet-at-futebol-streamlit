@@ -1,4 +1,4 @@
-# pagina que olha um jogador especifico dentro da partida escolhida.
+# pagina que olha um jogador especifico dentro da partida escolhida
 import streamlit as st
 
 import graficos
@@ -63,6 +63,6 @@ with st.form("comparar"):
 if comparar:
     resumo = utils.resumo_jogadores(eventos)
     comparacao = resumo[resumo["player"].isin([a, b])].set_index("player")
-    # comando magic: so deixar a variavel sozinha na linha que o streamlit mostra
+    # comando magic, so deixar a variavel sozinha na linha que o streamlit mostra
     comparacao
     st.bar_chart(comparacao[["passes", "chutes", "gols"]].T)

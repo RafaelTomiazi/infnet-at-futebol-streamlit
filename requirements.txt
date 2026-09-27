@@ -7,3 +7,5 @@ seaborn
 plotly
 altair
 pydeck
+folium
+streamlit-folium

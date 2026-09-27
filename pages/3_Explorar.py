@@ -1,7 +1,9 @@
-# pagina mais solta: formularios, upload de arquivo e um mapa com pydeck.
+# pagina mais solta: formularios, upload de arquivo e um mapa com pydeck
 import pandas as pd
+import folium
 import pydeck as pdk
 import streamlit as st
+from streamlit_folium import st_folium
 
 st.set_page_config(page_title="Explorar", page_icon="⚽", layout="wide")
 st.title("⚽ Explorar")
@@ -11,7 +13,7 @@ st.write(
     "um mapa. Nao precisa ter escolhido partida pra usar."
 )
 
-# formulario com varios tipos de campo. usei o st.form pra so processar quando clicar
+# formulario com varios tipos de campo, usei st.form pra so processar quando clicar
 st.header("Formulario")
 with st.form("meu_form"):
     nome = st.text_input("Seu nome")
@@ -40,7 +42,7 @@ if enviou:
         "novidades": marcar,
     })
 
-# upload de arquivo. aceito CSV e JSON pra dados e imagem pra quem quiser subir uma foto
+# upload de arquivo, aceito CSV e JSON pra dados e imagem se quiser subir uma foto
 st.header("Upload de arquivo")
 arquivo = st.file_uploader("Suba um CSV, JSON ou imagem", type=["csv", "json", "png", "jpg"])
 if arquivo is not None:
@@ -51,8 +53,8 @@ if arquivo is not None:
         st.write("Primeiras linhas do arquivo:")
         st.dataframe(df.head())
 
-# mapa com pydeck. como os eventos nao tem lat/long, usei as cidades-sede de uns
-# estadios famosos so pra mostrar a visualizacao espacial funcionando.
+# mapa com pydeck, como os eventos nao tem lat/long usei uns
+# estadios famosos so pra mostrar a visualizacao espacial funcionando
 st.header("Mapa de estadios (PyDeck)")
 estadios = pd.DataFrame({
     "estadio": ["Maracana", "Wembley", "Camp Nou", "Allianz Arena", "Santiago Bernabeu"],
@@ -72,5 +74,12 @@ st.pydeck_chart(pdk.Deck(
     initial_view_state=pdk.ViewState(latitude=30, longitude=0, zoom=1.2),
     tooltip={"text": "{estadio}"},
 ))
+
+# testei tambem o folium que e um componente de fora do streamlit, da pra clicar no marcador
+st.header("Mesmo mapa com Folium")
+mapa = folium.Map(location=[30, 0], zoom_start=2)
+for _, e in estadios.iterrows():
+    folium.Marker([e["lat"], e["lon"]], popup=e["estadio"]).add_to(mapa)
+st_folium(mapa, height=400, use_container_width=True)
 
 st.balloons()

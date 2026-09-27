@@ -1,5 +1,5 @@
-# funcoes que so montam os graficos. as paginas chamam elas e so mostram o resultado.
-# antes o mapa de passes estava copiado nas duas paginas, entao juntei tudo aqui.
+# funcoes que montam os graficos, as paginas so chamam e mostram
+# antes o mapa de passes tava copiado nas duas paginas entao juntei aqui
 import altair as alt
 import matplotlib.pyplot as plt
 import plotly.express as px

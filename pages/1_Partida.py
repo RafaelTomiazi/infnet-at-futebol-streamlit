@@ -1,4 +1,4 @@
-# pagina que analisa uma partida: estatisticas, mapa de passes e mapa de chutes.
+# pagina que analisa uma partida: estatisticas, mapa de passes e mapa de chutes
 import time
 
 import streamlit as st
@@ -10,7 +10,7 @@ st.set_page_config(page_title="Partida", page_icon="⚽", layout="wide")
 
 
 def indice_salvo(opcoes, chave):
-    # quando a pessoa volta pra essa pagina o selectbox voltava pro primeiro item.
+    # quando voltava pra essa pagina o selectbox voltava pro primeiro item
     # entao guardo a escolha no session_state e uso ela como index
     salvo = st.session_state.get(chave)
     return opcoes.index(salvo) if salvo in opcoes else 0
