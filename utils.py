@@ -1,5 +1,3 @@
-# funcoes que cuidam so dos dados, deixei separado pra nao poluir as
-# paginas que ficam so com a parte da tela
 import pandas as pd
 import streamlit as st
 from statsbombpy import sb
@@ -22,8 +20,7 @@ def carregar_eventos(match_id):
 
 
 def separar_xy(eventos):
-    # a coluna location vem como lista [x, y] e quase todo grafico precisa do x e y
-    # separados entao ja quebro em duas colunas aqui
+    # location vem como lista [x, y], separo em duas colunas pros graficos
     df = eventos.copy()
     df["x"] = df["location"].apply(lambda v: v[0] if isinstance(v, list) else None)
     df["y"] = df["location"].apply(lambda v: v[1] if isinstance(v, list) else None)
@@ -45,7 +42,6 @@ def estatisticas_partida(eventos):
 
 
 def resumo_jogadores(eventos):
-    # uma linha por jogador com passes, chutes e gols, pra comparar os jogadores
     df = eventos.dropna(subset=["player"])
     resumo = df.groupby(["player", "team"]).agg(
         passes=("type", lambda t: (t == "Pass").sum()),
@@ -57,7 +53,6 @@ def resumo_jogadores(eventos):
 
 
 def passes_acumulados(eventos):
-    # passes somados minuto a minuto de cada time, pra ver a evolucao no jogo
     passes = eventos[eventos["type"] == "Pass"]
     tabela = passes.groupby(["minute", "team"]).size().unstack(fill_value=0)
     return tabela.cumsum()

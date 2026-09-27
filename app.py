@@ -41,7 +41,7 @@ st.write(
 )
 
 st.subheader("Streamlit x outros frameworks")
-# achei que uma tabela resolvia melhor essa comparacao do que um paragrafo corrido
+# pensei em escrever isso em paragrafo mas preferi tabela, fica mais facil de comparar
 st.markdown(
     """
 | Ferramenta | Ponto forte | Limitacao |

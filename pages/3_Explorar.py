@@ -1,4 +1,3 @@
-# pagina mais solta: formularios, upload de arquivo e um mapa com pydeck
 import pandas as pd
 import folium
 import pydeck as pdk
@@ -13,7 +12,6 @@ st.write(
     "um mapa. Nao precisa ter escolhido partida pra usar."
 )
 
-# formulario com varios tipos de campo, usei st.form pra so processar quando clicar
 st.header("Formulario")
 with st.form("meu_form"):
     nome = st.text_input("Seu nome")
@@ -29,7 +27,6 @@ with st.form("meu_form"):
 
 if enviou:
     st.success(f"Valeu, {nome or 'visitante'}! Anotado.")
-    # o st.write aceita varios tipos de uma vez, entao jogo o resumo como dicionario
     st.write({
         "nome": nome,
         "time": time_favorito,
@@ -42,7 +39,6 @@ if enviou:
         "novidades": marcar,
     })
 
-# upload de arquivo, aceito CSV e JSON pra dados e imagem se quiser subir uma foto
 st.header("Upload de arquivo")
 arquivo = st.file_uploader("Suba um CSV, JSON ou imagem", type=["csv", "json", "png", "jpg"])
 if arquivo is not None:
@@ -75,7 +71,7 @@ st.pydeck_chart(pdk.Deck(
     tooltip={"text": "{estadio}"},
 ))
 
-# testei tambem o folium que e um componente de fora do streamlit, da pra clicar no marcador
+# pensei em ficar so no pydeck mas quis testar o folium tambem, nele da pra clicar no marcador
 st.header("Mesmo mapa com Folium")
 mapa = folium.Map(location=[30, 0], zoom_start=2)
 for _, e in estadios.iterrows():

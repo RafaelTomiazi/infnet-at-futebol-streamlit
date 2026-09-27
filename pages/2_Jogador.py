@@ -1,4 +1,3 @@
-# pagina que olha um jogador especifico dentro da partida escolhida
 import streamlit as st
 
 import graficos
@@ -7,7 +6,6 @@ import utils
 st.set_page_config(page_title="Jogador", page_icon="⚽", layout="wide")
 st.title("⚽ Analise por jogador")
 
-# essa pagina depende da partida escolhida la na pagina Partida
 if "match_id" not in st.session_state:
     st.warning("Escolha uma partida primeiro na pagina 'Partida'.")
     st.stop()
@@ -63,6 +61,6 @@ with st.form("comparar"):
 if comparar:
     resumo = utils.resumo_jogadores(eventos)
     comparacao = resumo[resumo["player"].isin([a, b])].set_index("player")
-    # comando magic, so deixar a variavel sozinha na linha que o streamlit mostra
+    # magic do streamlit, a variavel sozinha na linha ja aparece na tela
     comparacao
     st.bar_chart(comparacao[["passes", "chutes", "gols"]].T)

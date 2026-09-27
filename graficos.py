@@ -1,5 +1,5 @@
-# funcoes que montam os graficos, as paginas so chamam e mostram
-# antes o mapa de passes tava copiado nas duas paginas entao juntei aqui
+# pensei em deixar cada grafico dentro da sua pagina mas o mapa de passes ia ficar
+# repetido nas duas, entao juntei os graficos aqui
 import altair as alt
 import matplotlib.pyplot as plt
 import plotly.express as px
@@ -28,7 +28,7 @@ def mapa_chutes(chutes, figsize=(6, 4)):
     for _, ch in chutes.iterrows():
         if isinstance(ch["location"], list):
             gol = ch["shot_outcome"] == "Goal"
-            # tamanho do ponto pela chance de gol (xG), fica mais informativo
+            # tamanho do ponto pelo xG
             xg = ch.get("shot_statsbomb_xg")
             tam = 100 * float(xg if xg == xg and xg is not None else 0.05) + 30
             campo.scatter(ch["location"][0], ch["location"][1], ax=ax, s=tam,
@@ -73,7 +73,6 @@ def barras_tipos(eventos):
 
 
 def boxplot_passes(passes):
-    # boxplot do tamanho dos passes pros jogadores que mais passaram
     top = passes["player"].value_counts().head(8).index
     dados = passes[passes["player"].isin(top)][["player", "pass_length"]]
     return (

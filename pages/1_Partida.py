@@ -1,4 +1,3 @@
-# pagina que analisa uma partida: estatisticas, mapa de passes e mapa de chutes
 import time
 
 import streamlit as st
@@ -39,7 +38,7 @@ def barra_lateral():
     confronto = st.sidebar.selectbox("Partida", confrontos, index=indice_salvo(confrontos, "confronto"))
     linha_partida = partidas[partidas["confronto"] == confronto].iloc[0]
 
-    # a pagina do jogador usa essas mesmas escolhas
+    # a pagina do jogador usa isso
     st.session_state["confronto"] = confronto
     st.session_state["match_id"] = int(linha_partida["match_id"])
     return nome_comp, linha_partida
@@ -61,7 +60,6 @@ def mostrar_metricas(stats):
     c1.metric("Gols", stats["gols"], border=True)
     c2.metric("Chutes", stats["chutes"], border=True)
     c3.metric("Passes", stats["passes"], delta=f"{stats['passes_certos']} certos", border=True)
-    # o delta verde destaca a taxa de conversao, que e o numero que mais me interessa
     c4.metric("Conversao", f"{taxa:.1f}%", delta=f"{stats['gols']} gols", border=True)
     st.latex(r"\text{Conversao} = \frac{\text{gols}}{\text{chutes}} \times 100")
 
@@ -86,7 +84,6 @@ def aba_graficos(eventos):
     chutes_time = eventos[eventos["type"] == "Shot"].groupby("team").size().reset_index(name="chutes")
 
     st.markdown("**Passes acumulados ao longo do jogo**")
-    # grafico nativo do streamlit, mostra qual time teve mais a bola em cada momento
     st.line_chart(utils.passes_acumulados(eventos))
 
     col1, col2 = st.columns(2)
@@ -113,7 +110,7 @@ def aba_dados(eventos, stats):
     colunas = [c for c in ["minute", "type", "team", "player", "x", "y"] if c in eventos.columns]
     jogadores = ["Todos"] + sorted(eventos["player"].dropna().unique().tolist())
 
-    # usei form pra nao recarregar a tabela a cada clique, so quando aplicar
+    # pensei em filtrar direto mas preferi form pra nao recarregar a tabela a cada clique
     with st.form("filtros"):
         c1, c2 = st.columns(2)
         tipos = c1.multiselect("Tipos de evento", sorted(eventos["type"].unique()),
@@ -143,7 +140,6 @@ def aba_dados(eventos, stats):
     })
 
     with st.expander("Exemplo de evento em JSON"):
-        # so pra deixar claro o formato bruto que vem da StatsBomb
         primeiro = {k: str(v) for k, v in eventos.iloc[0].dropna().to_dict().items()}
         st.json(primeiro)
         st.code('from statsbombpy import sb\neventos = sb.events(match_id=' + str(eventos["match_id"].iloc[0])
@@ -162,7 +158,7 @@ st.text(f"Estadio: {linha_partida.get('stadium', '-')}   |   Arbitro: {linha_par
 
 mostrar_metricas(stats)
 
-# separei as visualizacoes em abas pra pagina nao ficar rolando sem fim
+# pensei em deixar tudo em sequencia mas ficava muito longo, entao usei abas
 t1, t2, t3 = st.tabs(["Mapas de campo", "Graficos", "Dados"])
 with t1:
     aba_mapas(eventos, times)
