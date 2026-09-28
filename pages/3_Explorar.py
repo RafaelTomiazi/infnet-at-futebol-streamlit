@@ -27,6 +27,7 @@ with st.form("meu_form"):
 
 if enviou:
     st.success(f"Valeu, {nome or 'visitante'}! Anotado.")
+    st.balloons()
     st.write({
         "nome": nome,
         "time": time_favorito,
@@ -78,5 +79,3 @@ for _, e in estadios.iterrows():
     folium.CircleMarker([e["lat"], e["lon"]], radius=8, color="red", fill=True,
                         popup=e["estadio"]).add_to(mapa)
 st_folium(mapa, height=400, use_container_width=True)
-
-st.balloons()
