@@ -18,7 +18,7 @@ def indice_salvo(opcoes, chave):
 def barra_lateral():
     st.sidebar.header("Escolha a partida")
 
-    with st.spinner("Carregando competicoes..."):
+    with st.spinner("Carregando competições..."):
         competicoes = utils.carregar_competicoes().copy()
     competicoes["nome"] = competicoes["competition_name"] + " - " + competicoes["season_name"]
     nomes = competicoes["nome"].tolist()
@@ -60,7 +60,7 @@ def mostrar_metricas(stats):
     c1.metric("Gols", stats["gols"], border=True)
     c2.metric("Chutes", stats["chutes"], border=True)
     c3.metric("Passes", stats["passes"], delta=f"{stats['passes_certos']} certos", border=True)
-    c4.metric("Conversao", f"{taxa:.1f}%", delta=f"{stats['gols']} gols", border=True)
+    c4.metric("Conversão", f"{taxa:.1f}%", delta=f"{stats['gols']} gols", border=True)
     st.latex(r"\text{Conversao} = \frac{\text{gols}}{\text{chutes}} \times 100")
 
 
@@ -88,7 +88,7 @@ def aba_graficos(eventos):
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("**Divisao dos passes (rosca)**")
+        st.markdown("**Divisão dos passes (rosca)**")
         st.plotly_chart(graficos.grafico_pizza(passes_time))
     with col2:
         st.markdown("**Passes e chutes por time (subplots)**")
@@ -102,7 +102,7 @@ def aba_graficos(eventos):
         st.markdown("**Tamanho dos passes por jogador (boxplot)**")
         st.altair_chart(graficos.boxplot_passes(eventos[eventos["type"] == "Pass"]))
 
-    st.markdown("**Quem passa mais tambem chuta mais? (Seaborn)**")
+    st.markdown("**Quem passa mais também chuta mais? (Seaborn)**")
     st.pyplot(graficos.relacao_passes_chutes(utils.resumo_jogadores(eventos)))
 
 
@@ -127,7 +127,7 @@ def aba_dados(eventos, stats):
     if jogador != "Todos":
         filtrado = filtrado[filtrado["player"] == jogador]
 
-    st.write(f"{len(filtrado)} eventos encontrados, mostrando ate {qtd}.")
+    st.write(f"{len(filtrado)} eventos encontrados, mostrando até {qtd}.")
     st.dataframe(filtrado[colunas].head(int(qtd)), height=300)
     st.download_button("Baixar eventos filtrados em CSV",
                        filtrado[colunas].to_csv(index=False).encode("utf-8"),
@@ -135,7 +135,7 @@ def aba_dados(eventos, stats):
 
     st.markdown("**Resumo**")
     st.table({
-        "Metrica": ["Gols", "Chutes", "Passes", "Passes certos"],
+        "Métrica": ["Gols", "Chutes", "Passes", "Passes certos"],
         "Valor": [stats["gols"], stats["chutes"], stats["passes"], stats["passes_certos"]],
     })
 
@@ -146,7 +146,7 @@ def aba_dados(eventos, stats):
                 + ')', language="python")
 
 
-st.title("⚽ Analise da partida")
+st.title("⚽ Análise da partida")
 nome_comp, linha_partida = barra_lateral()
 eventos = baixar_eventos(st.session_state["match_id"])
 times = eventos["team"].dropna().unique().tolist()
@@ -154,12 +154,12 @@ stats = utils.estatisticas_partida(eventos)
 
 st.subheader(st.session_state["confronto"])
 st.caption(f"{nome_comp} | data: {linha_partida['match_date']}")
-st.text(f"Estadio: {linha_partida.get('stadium', '-')}   |   Arbitro: {linha_partida.get('referee', '-')}")
+st.text(f"Estádio: {linha_partida.get('stadium', '-')}   |   Árbitro: {linha_partida.get('referee', '-')}")
 
 mostrar_metricas(stats)
 
 # pensei em deixar tudo em sequencia mas ficava muito longo, entao usei abas
-t1, t2, t3 = st.tabs(["Mapas de campo", "Graficos", "Dados"])
+t1, t2, t3 = st.tabs(["Mapas de campo", "Gráficos", "Dados"])
 with t1:
     aba_mapas(eventos, times)
 with t2:

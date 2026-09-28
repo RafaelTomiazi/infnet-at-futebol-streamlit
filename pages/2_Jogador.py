@@ -4,10 +4,10 @@ import graficos
 import utils
 
 st.set_page_config(page_title="Jogador", page_icon="⚽", layout="wide")
-st.title("⚽ Analise por jogador")
+st.title("⚽ Análise por jogador")
 
 if "match_id" not in st.session_state:
-    st.warning("Escolha uma partida primeiro na pagina 'Partida'.")
+    st.warning("Escolha uma partida primeiro na página 'Partida'.")
     st.stop()
 
 st.caption(f"Partida: {st.session_state.get('confronto', '')}")
@@ -43,12 +43,12 @@ with col_b:
     com_posicao = do_jogador.dropna(subset=["x", "y"])
     if len(com_posicao) > 2:
         st.pyplot(graficos.mapa_calor(com_posicao))
-        st.caption("Numero de acoes em cada parte do campo (ataque pra direita).")
+        st.caption("Número de ações em cada parte do campo (ataque pra direita).")
     else:
-        st.info("Poucas acoes desse jogador pra desenhar o mapa de calor.")
+        st.info("Poucas ações desse jogador pra desenhar o mapa de calor.")
 
 colunas = [c for c in ["minute", "type", "team", "player", "x", "y"] if c in do_jogador.columns]
-st.download_button("Baixar acoes do jogador em CSV",
+st.download_button("Baixar ações do jogador em CSV",
                    do_jogador[colunas].to_csv(index=False).encode("utf-8"),
                    "acoes_jogador.csv", "text/csv")
 
